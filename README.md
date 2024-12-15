@@ -1,8 +1,8 @@
-## My Personal Fork
+## Retrain Custom fork
 
 This is a fork for the Instructor model becuase the original repository isn't kept up anymore.  I've also made some improvements to their source code:
 
-1) Fixing it to work with the ```sentence-transformers``` library above 2.2.2.
+1) Fixing it to work with the ```sentence-transformers``` library above 3.0.
 2) Properly download the models from huggingface using the new "snapshot download" API.
 3) Ability to specify where you want the model donwloaded with the "cache_dir" parameter.
 
