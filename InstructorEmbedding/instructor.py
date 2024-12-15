@@ -518,62 +518,62 @@ class INSTRUCTOR(SentenceTransformer):
 
         return batched_input_features, labels
 
-    def _load_sbert_model(self, model_path, token=None, cache_folder=None, revision=None, trust_remote_code=False, **kwargs):
-        """
-        Loads a full sentence-transformers model
-        """
-        # copied from https://github.com/UKPLab/sentence-transformers/blob/66e0ee30843dd411c64f37f65447bb38c7bf857a/sentence_transformers/util.py#L559
-        # because we need to get files outside of the allow_patterns too
-        # If file is local
-        if os.path.isdir(model_path):
-            model_path = str(model_path)
-        else:
-            # If model_path is a Hugging Face repository ID, download the model
-            download_kwargs = {
-                "repo_id": model_path,
-                "revision": revision,
-                "library_name": "InstructorEmbedding",
-                "token": token,
-                "cache_dir": cache_folder,
-                "tqdm_class": disabled_tqdm,
-            }
+    # def _load_sbert_model(self, model_path, token=None, cache_folder=None, revision=None, trust_remote_code=False, **kwargs):
+    #     """
+    #     Loads a full sentence-transformers model
+    #     """
+    #     # copied from https://github.com/UKPLab/sentence-transformers/blob/66e0ee30843dd411c64f37f65447bb38c7bf857a/sentence_transformers/util.py#L559
+    #     # because we need to get files outside of the allow_patterns too
+    #     # If file is local
+    #     if os.path.isdir(model_path):
+    #         model_path = str(model_path)
+    #     else:
+    #         # If model_path is a Hugging Face repository ID, download the model
+    #         download_kwargs = {
+    #             "repo_id": model_path,
+    #             "revision": revision,
+    #             "library_name": "InstructorEmbedding",
+    #             "token": token,
+    #             "cache_dir": cache_folder,
+    #             "tqdm_class": disabled_tqdm,
+    #         }
 
-        # Check if the config_sentence_transformers.json file exists (exists since v2 of the framework)
-        config_sentence_transformers_json_path = os.path.join(
-            model_path, "config_sentence_transformers.json"
-        )
-        if os.path.exists(config_sentence_transformers_json_path):
-            with open(
-                config_sentence_transformers_json_path, encoding="UTF-8"
-            ) as config_file:
-                self._model_config = json.load(config_file)
+    #     # Check if the config_sentence_transformers.json file exists (exists since v2 of the framework)
+    #     config_sentence_transformers_json_path = os.path.join(
+    #         model_path, "config_sentence_transformers.json"
+    #     )
+    #     if os.path.exists(config_sentence_transformers_json_path):
+    #         with open(
+    #             config_sentence_transformers_json_path, encoding="UTF-8"
+    #         ) as config_file:
+    #             self._model_config = json.load(config_file)
 
-        # Check if a readme exists
-        model_card_path = os.path.join(model_path, "README.md")
-        if os.path.exists(model_card_path):
-            try:
-                with open(model_card_path, encoding="utf8") as config_file:
-                    self._model_card_text = config_file.read()
-            except:
-                pass
+    #     # Check if a readme exists
+    #     model_card_path = os.path.join(model_path, "README.md")
+    #     if os.path.exists(model_card_path):
+    #         try:
+    #             with open(model_card_path, encoding="utf8") as config_file:
+    #                 self._model_card_text = config_file.read()
+    #         except:
+    #             pass
 
-        # Load the modules of sentence transformer
-        modules_json_path = os.path.join(model_path, "modules.json")
-        with open(modules_json_path, encoding="UTF-8") as config_file:
-            modules_config = json.load(config_file)
+    #     # Load the modules of sentence transformer
+    #     modules_json_path = os.path.join(model_path, "modules.json")
+    #     with open(modules_json_path, encoding="UTF-8") as config_file:
+    #         modules_config = json.load(config_file)
 
-        modules = OrderedDict()
-        for module_config in modules_config:
-            if module_config["idx"] == 0:
-                module_class = INSTRUCTORTransformer
-            elif module_config["idx"] == 1:
-                module_class = INSTRUCTORPooling
-            else:
-                module_class = import_from_string(module_config["type"])
-            module = module_class.load(os.path.join(model_path, module_config["path"]))
-            modules[module_config["name"]] = module
+    #     modules = OrderedDict()
+    #     for module_config in modules_config:
+    #         if module_config["idx"] == 0:
+    #             module_class = INSTRUCTORTransformer
+    #         elif module_config["idx"] == 1:
+    #             module_class = INSTRUCTORPooling
+    #         else:
+    #             module_class = import_from_string(module_config["type"])
+    #         module = module_class.load(os.path.join(model_path, module_config["path"]))
+    #         modules[module_config["name"]] = module
 
-        return modules, kwargs
+    #     return modules, kwargs
 
     def encode(
         self,
